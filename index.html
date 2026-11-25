@@ -43,6 +43,33 @@
   #sky { position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
   #sparks { position:fixed; inset:0; pointer-events:none; z-index:30; }
 
+  /* ---------- Countdown ---------- */
+  #countdown { display:none; }
+  body.locked #countdown {
+    position:relative; z-index:1; min-height:100vh; padding:40px 20px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  body.locked #stage, body.locked #memories { display:none; }
+  #countdown.leaving { animation:cdOut 1.2s ease forwards; }
+  @keyframes cdOut { to { opacity:0; transform:scale(1.04); filter:blur(6px); } }
+  .cd-title {
+    font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:600;
+    font-size:clamp(2rem,7vw,3.2rem); margin:14px 0 30px; text-shadow:0 0 24px rgba(255,190,100,.25);
+  }
+  .cd-clock { display:flex; gap:clamp(10px,3vw,22px); }
+  .cd-unit {
+    min-width:clamp(78px,22vw,112px); padding:16px 10px 12px; border-radius:14px;
+    background:rgba(255,207,112,.07); border:1px solid rgba(255,207,112,.3);
+    box-shadow:0 0 30px rgba(255,190,100,.1);
+  }
+  .cd-num {
+    display:block; font-family:'Fraunces',serif; font-weight:800; font-size:clamp(2.4rem,10vw,4rem); line-height:1;
+    background:linear-gradient(180deg,#fff0c2,#ffcf70 50%,#ec9f45);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .cd-label { display:block; margin-top:8px; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); }
+  .cd-note { margin-top:34px; color:var(--muted); font-size:.95rem; animation:fade 2.4s ease-in-out infinite; }
+
   /* ---------- Stage ---------- */
   #stage {
     min-height:100vh; padding:50px 20px; position:relative; z-index:1;
@@ -259,7 +286,7 @@
   @media (max-width:360px) { .cake-wrap { transform:scale(.88); } }
 </style>
 </head>
-<body>
+<body class="locked">
 <div class="bg">
   <div class="warm"></div>
   <svg class="hills" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">
@@ -270,6 +297,17 @@
 </div>
 <canvas id="sky"></canvas>
 <canvas id="sparks"></canvas>
+
+<section id="countdown">
+  <p class="eyebrow">For <span id="cdName"></span></p>
+  <h2 class="cd-title">Something's waiting for you ✨</h2>
+  <div class="cd-clock">
+    <div class="cd-unit"><span class="cd-num" id="cdH">00</span><span class="cd-label">Hours</span></div>
+    <div class="cd-unit"><span class="cd-num" id="cdM">00</span><span class="cd-label">Minutes</span></div>
+    <div class="cd-unit"><span class="cd-num" id="cdS">00</span><span class="cd-label">Seconds</span></div>
+  </div>
+  <p class="cd-note">Come back at midnight 🤍</p>
+</section>
 
 <section id="stage">
   <div class="reveal">
@@ -348,6 +386,7 @@
   const CONFIG = {
     name: "Kei",
     age: "25",
+    unlockAt: "2026-11-26T00:00:00+08:00",   // 12 AM Thu 26 Nov, Taiwan time
     message: "Happy birthday to my favorite person. I hope this year brings you joy, good food, love and everything you just wished for. I love you and God bless you.",
     from: "— Abin",
     photoFolder: "photos",
@@ -365,6 +404,7 @@
 
   const $ = id => document.getElementById(id);
   $('name').textContent = CONFIG.name;
+  $('cdName').textContent = CONFIG.name;
   $('greet').textContent = `Dear ${CONFIG.name},`;
   $('sign').textContent = CONFIG.from;
   $('tHeading').textContent = CONFIG.surprise.heading;
@@ -766,6 +806,38 @@
       for (let i = 0; i < 12; i++) setTimeout(() => spawnLantern({ far: false }), i * 120);
     }, 450);
   });
+
+  /* ---------- Countdown lock ---------- */
+  const UNLOCK_AT = new Date(CONFIG.unlockAt);
+  const preview = new URLSearchParams(location.search).has('preview'); // add ?preview to the URL to skip
+  const pad = n => String(n).padStart(2, '0');
+  let firstCheck = true, cdTimer = null;
+
+  function unlock(animate) {
+    clearInterval(cdTimer);
+    const open = () => {
+      document.body.classList.remove('locked');
+      window.scrollTo(0, 0);
+      if (animate) {
+        burst(innerWidth / 2, innerHeight * .4, 140);
+        for (let i = 0; i < 12; i++) setTimeout(() => spawnLantern({ far: false }), i * 140);
+      }
+    };
+    if (animate) { $('countdown').classList.add('leaving'); setTimeout(open, 1200); }
+    else open();
+  }
+
+  function checkCountdown() {
+    const ms = UNLOCK_AT - Date.now();
+    if (ms <= 0 || preview) { unlock(!firstCheck); return; }
+    firstCheck = false;
+    const s = Math.ceil(ms / 1000);
+    $('cdH').textContent = pad(Math.floor(s / 3600));
+    $('cdM').textContent = pad(Math.floor(s / 60) % 60);
+    $('cdS').textContent = pad(s % 60);
+  }
+  checkCountdown();
+  if (document.body.classList.contains('locked')) cdTimer = setInterval(checkCountdown, 250);
 </script>
 </body>
 </html>
