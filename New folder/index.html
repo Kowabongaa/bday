@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday, Kei ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#1d1530; --ink:#fff6e9; --accent:#ff7a59; --accent2:#ffd166; --soft:#c9b8ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    min-height:100vh; padding:60px 20px 90px; text-align:center; overflow-x:hidden;
+    background:radial-gradient(circle at 50% 0%, #3a2560, var(--bg) 70%) fixed;
+    color:var(--ink); font-family:'Inter',sans-serif;
+  }
+  #confetti { position:fixed; inset:0; pointer-events:none; z-index:30; }
+
+  /* Balloons */
+  .balloon {
+    position:fixed; bottom:-140px; width:50px; height:64px; z-index:0; opacity:.5;
+    border-radius:50% 50% 48% 48%; animation:rise linear infinite;
+  }
+  .balloon::after {
+    content:''; position:absolute; top:100%; left:50%;
+    width:1px; height:60px; background:rgba(255,255,255,.35);
+  }
+  @keyframes rise { to { transform:translate(30px,-130vh); } }
+
+  main { position:relative; z-index:1; max-width:1000px; margin:0 auto; }
+  .intro { max-width:640px; margin:0 auto; }
+  .eyebrow { letter-spacing:.3em; text-transform:uppercase; font-size:.8rem; color:var(--soft); }
+  h1 { font-family:'Fraunces',serif; font-size:clamp(2.6rem,9vw,5rem); line-height:1.1; margin:14px 0 6px; }
+  .name-row { display:block; }
+  .name {
+    font-style:italic; font-weight:400;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .heart { display:inline-block; font-size:.8em; animation:beat 1.4s ease-in-out infinite; }
+  @keyframes beat {
+    0%,100% { transform:scale(1); } 15% { transform:scale(1.2); }
+    30% { transform:scale(1); } 45% { transform:scale(1.12); }
+  }
+
+  /* Cake */
+  .cake { position:relative; width:220px; height:190px; margin:70px auto 0; cursor:pointer; }
+  .plate { position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+           width:270px; height:16px; background:#e8e1f5; border-radius:50%; }
+  .layer { position:absolute; left:50%; transform:translateX(-50%); border-radius:12px; }
+  .layer.bottom { bottom:0; width:220px; height:72px; background:#f4a6c0; }
+  .layer.top { bottom:72px; width:170px; height:62px; background:#fbe3ea; }
+  .layer.top::after {
+    content:''; position:absolute; left:0; right:0; top:0; height:18px; border-radius:12px 12px 0 0;
+    background:radial-gradient(circle at 10px 18px, #fff 9px, transparent 10px) 0 0/20px 26px repeat-x, #fff;
+  }
+  .candles { position:absolute; bottom:134px; left:50%; transform:translateX(-50%); display:flex; gap:24px; }
+  .candle { position:relative; width:10px; height:42px; border-radius:3px;
+            background:repeating-linear-gradient(45deg,#fff 0 5px,var(--accent) 5px 10px); }
+  .flame {
+    position:absolute; top:-24px; left:50%; margin-left:-6px; width:12px; height:20px;
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; transform-origin:bottom center;
+    background:radial-gradient(circle at 50% 70%, #fff8d0, var(--accent2) 50%, var(--accent));
+    box-shadow:0 0 18px 4px rgba(255,209,102,.5);
+    animation:flicker .15s infinite alternate; transition:opacity .4s, transform .4s;
+  }
+  @keyframes flicker { to { transform:scale(1.06,.9) rotate(3deg); } }
+  .cake.out .flame { opacity:0; transform:scale(.2) translateY(-12px); animation:none; }
+
+  .hint { margin-top:34px; color:var(--soft); font-size:.95rem; min-height:1.4em; }
+
+  /* Message card */
+  .card {
+    margin-top:36px; padding:28px; border-radius:18px; line-height:1.75; font-size:1.05rem;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    opacity:0; transform:translateY(20px); transition:.8s ease;
+  }
+  .card.show { opacity:1; transform:none; }
+  .from { margin-top:14px; font-family:'Fraunces',serif; font-style:italic; color:var(--accent2); }
+
+  /* Gallery */
+  .memories { display:none; margin-top:80px; }
+  .memories.visible { display:block; }
+  .memories h2 { font-family:'Fraunces',serif; font-size:clamp(1.8rem,5vw,2.6rem); }
+  .memories .sub { color:var(--soft); margin:8px 0 40px; }
+  .gallery {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:34px 26px; padding:0 8px;
+  }
+  .polaroid {
+    --r:0deg; position:relative;
+    background:#fff6e9; padding:10px 10px 34px; border-radius:4px; cursor:zoom-in;
+    box-shadow:0 14px 30px rgba(0,0,0,.4);
+    opacity:0; transform:translateY(40px) rotate(var(--r));
+    transition:transform .5s ease, opacity .6s ease;
+  }
+  .gallery.show .polaroid { opacity:1; transform:rotate(var(--r)); }
+  .gallery.show .polaroid:hover { transform:rotate(0) scale(1.06); z-index:2; }
+  .polaroid img {
+    display:block; width:100%; aspect-ratio:3/4; object-fit:cover;
+    border-radius:2px; background:#e9e1d4;
+  }
+  .polaroid::before { /* bit of tape */
+    content:''; position:absolute; top:-10px; left:50%; width:70px; height:22px;
+    transform:translateX(-50%) rotate(-3deg); background:rgba(255,209,102,.55);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center;
+    background:rgba(15,10,25,.94); opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .lightbox.open { opacity:1; pointer-events:auto; }
+  #lb-img { display:block; max-width:88vw; max-height:85vh; border-radius:6px; }
+  .lb-btn {
+    position:absolute; background:rgba(255,255,255,.1); color:var(--ink); border:none;
+    width:48px; height:48px; border-radius:50%; font-size:1.8rem; cursor:pointer; line-height:1;
+  }
+  .lb-btn:hover { background:rgba(255,255,255,.22); }
+  .lb-close { top:18px; right:18px; }
+  .lb-prev { left:14px; top:50%; transform:translateY(-50%); }
+  .lb-next { right:14px; top:50%; transform:translateY(-50%); }
+
+  footer { margin-top:70px; color:var(--soft); font-size:.9rem; }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+
+<main>
+  <section class="intro">
+    <p class="eyebrow">Today is all about you</p>
+    <h1>Happy Birthday,
+      <span class="name-row"><span class="name" id="name"></span> <span class="heart">❤️</span></span>
+    </h1>
+
+    <div class="cake" id="cake" title="Make a wish and click!">
+      <div class="plate"></div>
+      <div class="layer bottom"></div>
+      <div class="layer top"></div>
+      <div class="candles">
+        <div class="candle"><div class="flame"></div></div>
+        <div class="candle"><div class="flame"></div></div>
+        <div class="candle"><div class="flame"></div></div>
+      </div>
+    </div>
+
+    <p class="hint" id="hint">Make a wish, then tap the cake to blow out the candles 🎂</p>
+
+    <div class="card" id="card">
+      <p id="message"></p>
+      <p class="from" id="from"></p>
+    </div>
+  </section>
+
+  <section class="memories" id="memories">
+    <h2>A few favorite moments</h2>
+    <p class="sub">Tap any photo to see it bigger</p>
+    <div class="gallery" id="gallery"></div>
+    <footer>Here's to many more adventures together ✨</footer>
+  </section>
+</main>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-btn lb-close" id="lb-close" aria-label="Close">×</button>
+  <button class="lb-btn lb-prev" id="lb-prev" aria-label="Previous">‹</button>
+  <img id="lb-img" alt="">
+  <button class="lb-btn lb-next" id="lb-next" aria-label="Next">›</button>
+</div>
+
+<script>
+  /* ====== EDIT THESE ====== */
+  const CONFIG = {
+    name: "Kei",
+    message: "Happy birthday to my favorite person. From Taipei streets to Marina Bay, every adventure is better with you next to me (even when you're giving me that look). I hope this year brings you flowers, good food, and everything you just wished for. I love you.",
+    from: "— With all my love",
+    photos: [
+      "photos/1.jpg", "photos/2.jpg", "photos/3.jpg", "photos/4.jpg",
+      "photos/5.jpg", "photos/6.jpg", "photos/7.jpg", "photos/8.jpg",
+      "photos/9.jpg", "photos/10.jpg", "photos/11.jpg", "photos/12.jpg",
+      "photos/13.jpg"
+    ]
+  };
+  /* ======================== */
+
+  document.getElementById('name').textContent = CONFIG.name;
+  document.getElementById('message').textContent = CONFIG.message;
+  document.getElementById('from').textContent = CONFIG.from;
+
+  const colors = ['#ff7a59','#ffd166','#c9b8ff','#7ee0c3','#f4a6c0'];
+
+  // Balloons
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'balloon';
+    b.style.left = Math.random() * 100 + 'vw';
+    b.style.background = colors[i % colors.length];
+    b.style.animationDuration = 10 + Math.random() * 10 + 's';
+    b.style.animationDelay = -Math.random() * 20 + 's';
+    b.style.scale = 0.6 + Math.random() * 0.7;
+    document.body.appendChild(b);
+  }
+
+  // Gallery
+  const gallery = document.getElementById('gallery');
+  CONFIG.photos.forEach((src, i) => {
+    const fig = document.createElement('figure');
+    fig.className = 'polaroid';
+    fig.style.setProperty('--r', (Math.random() * 8 - 4).toFixed(1) + 'deg');
+    fig.innerHTML = `<img src="${src}" alt="Photo ${i + 1}" loading="lazy">`;
+    fig.addEventListener('click', () => openLightbox(i));
+    gallery.appendChild(fig);
+  });
+
+  function revealGallery() {
+    const mem = document.getElementById('memories');
+    if (mem.classList.contains('visible')) return;
+    mem.classList.add('visible');
+    const items = [...gallery.children];
+    items.forEach((el, i) => el.style.transitionDelay = (i * 90) + 'ms');
+    requestAnimationFrame(() => requestAnimationFrame(() => gallery.classList.add('show')));
+    setTimeout(() => items.forEach(el => el.style.transitionDelay = '0ms'), items.length * 90 + 700);
+  }
+
+  // Lightbox
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  let current = 0;
+
+  function showPhoto(i) {
+    current = (i + CONFIG.photos.length) % CONFIG.photos.length;
+    lbImg.src = CONFIG.photos[current];
+  }
+  function openLightbox(i) { showPhoto(i); lb.classList.add('open'); }
+  function closeLightbox() { lb.classList.remove('open'); }
+
+  document.getElementById('lb-close').onclick = closeLightbox;
+  document.getElementById('lb-prev').onclick = e => { e.stopPropagation(); showPhoto(current - 1); };
+  document.getElementById('lb-next').onclick = e => { e.stopPropagation(); showPhoto(current + 1); };
+  lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+  addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showPhoto(current - 1);
+    if (e.key === 'ArrowRight') showPhoto(current + 1);
+  });
+
+  // Swipe on phones
+  let touchX = null;
+  lb.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  lb.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) showPhoto(current + (dx < 0 ? 1 : -1));
+    touchX = null;
+  });
+
+  // Confetti
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  let pieces = [], running = false;
+  const resize = () => { canvas.width = innerWidth; canvas.height = innerHeight; };
+  resize(); addEventListener('resize', resize);
+
+  function burst(x, y) {
+    for (let i = 0; i < 180; i++) {
+      pieces.push({
+        x, y,
+        vx: (Math.random() - .5) * 16,
+        vy: -Math.random() * 15 - 4,
+        size: Math.random() * 8 + 5,
+        color: colors[i % colors.length],
+        rot: Math.random() * 6,
+        vr: (Math.random() - .5) * .3
+      });
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of pieces) {
+      p.vy += .35; p.vx *= .99;
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+      ctx.restore();
+    }
+    pieces = pieces.filter(p => p.y < canvas.height + 20);
+    if (pieces.length) requestAnimationFrame(tick); else running = false;
+  }
+
+  // Cake
+  const cake = document.getElementById('cake');
+  const hint = document.getElementById('hint');
+  const card = document.getElementById('card');
+
+  cake.addEventListener('click', () => {
+    if (!cake.classList.contains('out')) {
+      cake.classList.add('out');
+      const r = cake.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + 20);
+      card.classList.add('show');
+      revealGallery();
+      hint.textContent = "Your wish is on its way ✨ Scroll down for some memories 📸";
+    } else {
+      cake.classList.remove('out');
+      hint.textContent = "Make another wish, then tap to blow them out 🎂";
+    }
+  });
+</script>
+</body>
+</html>
